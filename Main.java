@@ -10,12 +10,14 @@ public class Main {
 
     public static void main(String[] args) {
 
-
-        dbm.makeDBConnection(args[1]);
-
-
-
-        runMenu();
+        boolean dbCreated = false;
+        while (!out) {
+            if (!dbCreated) {
+                dbm.makeDBConnection();
+                dbCreated = true;
+            }
+        }
+            runMenu();
     }
 
     public static void runMenu() {
@@ -41,16 +43,17 @@ public class Main {
 
                     /*for (var entry : DatabaseManager.cards.entrySet()) {
                         System.out.println(entry.getKey() + " " + entry.getValue());
-                    break;*/
+                    }*/
+                    break;
                 case 2:
                     System.out.println("Enter your card number:");
                     String a = s.next();
                     System.out.println("Enter your PIN:");
                     String d = s.next();
 
-                    for (Card card: DatabaseManager.cards.values()){
-                        if(card.getCardNumber().equals(a)) {
-                            if (card.getPin().equals(d)) {
+                    for (Card card: DatabaseManager.cards.values()){            //gledamo po mapi card
+                        if(card.getCardNumber().equals(a)) {                    // vrijednost cardNumber objekta card
+                            if (card.getPin().equals(d)) {                      // vrijednost cardNumber objekta card
                                 System.out.println("You have successfully logged in!");
                                 logInToAccount();
                             }
@@ -74,23 +77,16 @@ public class Main {
 
         do {
             System.out.println("Please chose your option\n" + "1 - Balance\n" +
-                            "2 - Add income\n" + "3 - Do transfer\n" + "4 - Close account\n" +
-                            "5 - Log out\n" + "0 - Exit\n");
+                    "2 - Log out\n" + "0 - Exit\n");
 
             int option = s.nextInt();
 
             switch (option) {
                 case 1:
-                   // dbm.selectBalance();
+                    int balance = 0;
+                    System.out.println("Balance: " + balance);
                     break;
                 case 2:
-                   // dbm.addIncome();
-                    break;
-                case 3:
-                    break;
-                case 4:
-                    break;
-                case 5:
                     System.out.println("You have successfully logged out!");
                     runMenu();
                     break;

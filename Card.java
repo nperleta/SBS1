@@ -6,13 +6,23 @@ public class Card {
     private String pin;
     private int balance;
 
+    public Card(String cardNumber, String pin, int balance) {
+        this.cardNumber = cardNumber;
+        this.pin = pin;
+        this.balance = balance;
+    }
+
+    public Card(){
+
+    }
+
     public int getBalance() {
-        balance = 0;
         return balance;
     }
 
-    public void setBalance(int balance) {
+    public int setBalance(int balance) {
         this.balance = balance;
+        return balance;
     }
 
     public String getCardNumber() {
@@ -32,9 +42,7 @@ public class Card {
     }
 
     public String createNewCardNumber() {
-
-        String cardnum = "400000" + String.format("%09d", (long) (Math.random() * 999999999L));
-        setCardNumber(cardnum + generateCheckDigit(cardnum));
+        cardNumber = checkSum();
         return cardNumber;
     }
 
@@ -88,7 +96,33 @@ public class Card {
         int checkDigit = ((mod == 0) ? 0 : 10 - mod);
 
         return checkDigit;
+    }
 
+    public String checkSum() {
+        String card = "400000" + String.format("%09d", (long) (Math.random() * 999999999L));
+        for (int i = 0; i <= 9; i++) {
+            String checksum = card + i;
+            if (check(checksum)) {
+                return checksum;
+            }
+        }
+        throw new IllegalStateException("Probably you made a mistake in the card number. Please try again!\n");
+    }
 
+    public static boolean check(String cardNumber) {
+        int sum = 0;
+        boolean alternate = false;
+        for (int i = cardNumber.length() - 1; i >= 0; i--) {
+            int n = Integer.parseInt(cardNumber.substring(i, i + 1));
+            if (alternate) {
+                n *= 2;
+                if (n > 9) {
+                    n = (n % 10) + 1;
+                }
+            }
+            sum += n;
+            alternate = !alternate;
+        }
+        return (sum % 10 == 0);
     }
 }

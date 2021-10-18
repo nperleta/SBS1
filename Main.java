@@ -7,14 +7,12 @@ public class Main {
     static DatabaseManager dbm = new DatabaseManager();
     static boolean out = true;
     static final Scanner s = new Scanner(System.in);
+    static Card c = new Card();
+    static Card currCard = null;
 
     public static void main(String[] args) {
 
-
         dbm.makeDBConnection(args[1]);
-
-
-
         runMenu();
     }
 
@@ -39,27 +37,27 @@ public class Main {
 
                     dbm.insertToDB(c);
 
-                    /*for (var entry : DatabaseManager.cards.entrySet()) {
+                    for (var entry : DatabaseManager.cards.entrySet()) {
                         System.out.println(entry.getKey() + " " + entry.getValue());
-                    break;*/
+                    }
+                    break;
                 case 2:
                     System.out.println("Enter your card number:");
                     String a = s.next();
                     System.out.println("Enter your PIN:");
                     String d = s.next();
 
-                    for (Card card: DatabaseManager.cards.values()){
-                        if(card.getCardNumber().equals(a)) {
-                            if (card.getPin().equals(d)) {
-                                System.out.println("You have successfully logged in!");
-                                logInToAccount();
-                            }
-                        } else
-                            System.out.println("Wrong card number or PIN!");
+                    if (dbm.isCardInDB(a, d)) {
+                        currCard = new Card(a, d, 0);
+                        System.out.println("You have successfully logged in!");
+                        logInToAccount();
+                    } else {
+                        System.out.println("Wrong card number or PIN!");
                     }
                     break;
                 case 0:
                     out = !out;
+                    DatabaseManager.closeDBConnection();
                     System.out.println("Thank you for using Simple Banking System!\n" +
                             "GoodBye!");
                     break;
@@ -74,21 +72,48 @@ public class Main {
 
         do {
             System.out.println("Please chose your option\n" + "1 - Balance\n" +
-                            "2 - Add income\n" + "3 - Do transfer\n" + "4 - Close account\n" +
-                            "5 - Log out\n" + "0 - Exit\n");
+                    "2 - Add income\n" + "3 - Do transfer\n" + "4 - Close account\n" +
+                    "5 - Log out\n" + "0 - Exit\n");
 
             int option = s.nextInt();
 
             switch (option) {
                 case 1:
-                   // dbm.selectBalance();
+                    System.out.println("\nBalance: " + dbm.balanceStatus(currCard.getCardNumber()));
                     break;
                 case 2:
-                   // dbm.addIncome();
+                    System.out.println("\nEnter income:");
+                    int money = s.nextInt();
+                    currCard.setBalance(money);
+                    dbm.addIncome(currCard.getCardNumber(), money);
+                    System.out.println("Income was added!");
                     break;
                 case 3:
+                    System.out.println("\nTransfer\n" +
+                            "Enter card number:");
+                    String number = s.next();
+                    if (currCard.getCardNumber().equals(number)) {
+                        System.out.println("You can't transfer money to the same account!");
+                    } else if (!c.check(number))
+                        System.out.println("Probably you made a mistake in the card number. Please try again!");
+                    else if (!dbm.isCardInDB(number))
+                        System.out.println("Such a card does not exist.");
+                    else {
+                        System.out.println("\nEnter how much money you want to transfer:");
+                        int transfer = s.nextInt();
+                        if (transfer >= dbm.balanceStatus(currCard.getCardNumber()))
+                            System.out.println("Not enough money!");
+                        else {
+                            System.out.println("Success!");
+                            dbm.addIncome(currCard.getCardNumber(), -transfer);
+                            dbm.addIncome(number, +transfer);
+                        }
+                    }
                     break;
                 case 4:
+                    dbm.deleteAccount(currCard);
+                    System.out.println("The account has been closed!");
+                    runMenu();
                     break;
                 case 5:
                     System.out.println("You have successfully logged out!");
@@ -96,6 +121,7 @@ public class Main {
                     break;
                 case 0:
                     out = !out;
+                    DatabaseManager.closeDBConnection();
                     System.out.println("Thank you for using Simple Banking System!\n" +
                             "GoodBye!");
                     break;

@@ -7,6 +7,7 @@ public class Card {
     private int balance;
 
     public int getBalance() {
+        balance = 0;
         return balance;
     }
 
@@ -48,6 +49,15 @@ public class Card {
         createNewPin();
     }
 
+    @Override
+    public String toString() {
+        return "Card{" +
+                "cardNumber='" + cardNumber + '\'' +
+                ", pin='" + pin + '\'' +
+                ", balance=" + balance +
+                '}';
+    }
+
     /**
      * Generate check digit using luhn algorithm
      * Source from: https://gist.github.com/stanzheng/5781833
@@ -78,7 +88,7 @@ public class Card {
         int checkDigit = ((mod == 0) ? 0 : 10 - mod);
 
         return checkDigit;
+
+
     }
 }
-
-

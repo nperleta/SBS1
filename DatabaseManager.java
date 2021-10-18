@@ -3,13 +3,16 @@ package banking;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
 
 public class DatabaseManager {
+
+    static final Scanner s = new Scanner(System.in);
 
     static Connection conn = null;
     static Map<String, Card> cards = new HashMap<>();
 
-    public static void makeDBConnection() {
+    public static void makeDBConnection(String fileName) {
         String sql = "CREATE TABLE IF NOT EXISTS card (\n"
                 + "    id integer PRIMARY KEY,\n"
                 + "    number text NOT NULL UNIQUE,\n"
@@ -18,7 +21,7 @@ public class DatabaseManager {
                 + ");";
 
         try {
-            conn = DriverManager.getConnection("jdbc:sqlite:card.s3db");
+            conn = DriverManager.getConnection("jdbc:sqlite:" + fileName);
             Statement stmt = conn.createStatement();
 
             // napravi novu tablicu ako je nema
@@ -45,6 +48,36 @@ public class DatabaseManager {
         System.out.println(c);
     }
 
+    /*public void selectBalance() {
+        Card c = new Card();
+        String sql1 = "SELECT balance FROM fileName";
+        try (PreparedStatement s = conn.prepareStatement(sql1)) {
+           c.getBalance();
+           s.execute();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        System.out.println(sql1);
+        cards.put(c.getCardNumber(), c);
+        System.out.println(c);
+    }
+
+    public void addIncome(Card c) {
+
+        int b =s.nextInt();
+        int b0 = c.getBalance();
+        int newbalance = b + b0;
+
+        String sql = "INSERT INTO card (number, pin, balance) VALUES(?, ?, ?)";
+        try (PreparedStatement s = conn.prepareStatement(sql)) {
+            s.setInt(3, newbalance);
+            s.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        cards.put(c.getCardNumber(), c);
+        System.out.println(c);
+    }
     public boolean isCardInDB(String number, String pin) {
         String sql = "SELECT number, pin FROM card";
         try {
@@ -62,5 +95,5 @@ public class DatabaseManager {
             throwables.printStackTrace();
         }
         return false;
-    }
+    }*/
 }
